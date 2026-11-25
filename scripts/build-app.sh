@@ -2,24 +2,13 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-BUILD_DIR="$ROOT/.build/release"
 APP_DIR="$ROOT/dist/Cadence.app"
-CACHE_DIR="$ROOT/.local-cache"
 source "$ROOT/scripts/toolchain.sh"
 
 cd "$ROOT"
-mkdir -p "$BUILD_DIR" "$CACHE_DIR/clang" "$CACHE_DIR/swift"
-CLANG_MODULE_CACHE_PATH="$CACHE_DIR/clang" \
-SWIFT_MODULECACHE_PATH="$CACHE_DIR/swift" \
-xcrun swiftc \
-    -sdk "$SDK" \
-    -target "$(uname -m)-apple-macosx14.0" \
-    "${compiler_flags[@]}" \
-    -parse-as-library \
-    -file-prefix-map "$ROOT"=. \
-    -O \
-    -o "$BUILD_DIR/Cadence" \
-    Sources/*.swift
+release_flags=(-c release -debug-info-format none "${swiftpm_flags[@]}" -Xswiftc -file-prefix-map -Xswiftc "$ROOT=.")
+xcrun swift build "${release_flags[@]}" --product Cadence
+BUILD_DIR="$(xcrun swift build "${release_flags[@]}" --show-bin-path)"
 
 mkdir -p "$APP_DIR/Contents/MacOS"
 cp "$BUILD_DIR/Cadence" "$APP_DIR/Contents/MacOS/Cadence"

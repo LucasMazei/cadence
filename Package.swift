@@ -9,10 +9,7 @@ let package = Package(
         .executable(name: "Cadence", targets: ["Cadence"])
     ],
     targets: [
-        .executableTarget(
-            name: "Cadence",
-            path: "Sources"
-        ),
-        .testTarget(name: "CadenceTests", dependencies: ["Cadence"], path: "Tests/Swift", resources: [.copy("Fixtures")])
+        .executableTarget(name: "Cadence"),
+        .testTarget(name: "CadenceTests", dependencies: ["Cadence"], resources: [.copy("Fixtures")])
     ]
 )
