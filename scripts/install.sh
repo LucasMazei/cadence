@@ -13,7 +13,7 @@ APP_PATH="$APPLICATIONS_DIR/Cadence.app"
 AGENT_PATH="$AGENT_DIR/$LABEL.plist"
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
-if ! command -v uv >/dev/null; then
+if [[ ! -x "$ROOT/bin/uv" ]] && ! command -v uv >/dev/null; then
     echo "Install uv first (brew install uv), then run this installer again." >&2
     exit 1
 fi
@@ -29,6 +29,9 @@ codesign --verify --strict "$bundle"
 mkdir -p "$APPLICATIONS_DIR" "$SUPPORT_DIR/backend" "$SUPPORT_DIR/bin" "$CONFIG_DIR" "$CACHE_DIR" "$AGENT_DIR"
 stage=$(mktemp -d "$APPLICATIONS_DIR/.cadence-install.XXXXXX")
 files=(backend/fetch_calendar.py backend/pyproject.toml backend/uv.lock bin/backend.sh bin/sync.sh)
+if [[ -x "$ROOT/bin/uv" ]]; then
+    files+=(bin/uv bin/LICENSE-uv-MIT bin/LICENSE-uv-APACHE)
+fi
 replacing=false
 was_running=false
 cleanup() {

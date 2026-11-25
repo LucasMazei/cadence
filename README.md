@@ -5,21 +5,18 @@ to browse the month. Select **Hoje** to return to the current date.
 
 ## Install on macOS
 
-The prebuilt release supports **Apple Silicon and macOS 14 or later**. Install
-[uv](https://docs.astral.sh/uv/getting-started/installation/) with Homebrew
-(`brew install uv`). Cadence uses uv to install Python and its locked Google
-API dependencies on first sync. An internet connection is required.
+Download the **.pkg** for Apple Silicon from [the latest release](https://github.com/LucasMazei/cadence/releases/latest).
+On macOS 14 or later, double-click the package and follow the prompts in Installer.
+Cadence starts in the menu bar and launches again at login. Open the gear and
+choose **Contas** → **Conectar** to link your Google account.
 
-1. Download the ZIP and matching SHA-256 file from [Releases](https://github.com/LucasMazei/cadence/releases/latest).
-2. In the download folder run `shasum -a 256 -c Cadence-0.1.0-macOS-arm64.zip.sha256`.
-3. Extract the ZIP and open **Install.command** from the extracted folder while
-   logged into the Mac. It checks that the panel fits on screen, installs the
-   app in `~/Applications`, and registers it to start at login.
-4. Open the menu bar gear, select **Contas**, and connect your Google account.
+The installer includes uv. On first sync it uses the internet to download Python
+and the locked Google API dependencies. Updates preserve your accounts and OAuth
+tokens. Each release also includes a ZIP with **Install.command** and SHA-256
+files for both downloads.
 
-The prebuilt app uses an ad-hoc signature and has no Apple notarization.
-Gatekeeper and managed Mac policies may block the download. Building from a
-reviewed checkout is also supported.
+The app has an ad-hoc signature. The installer is unsigned and the release has
+no Apple notarization. Gatekeeper or managed Mac policies may block installation.
 
 ## Google backend
 
@@ -110,13 +107,15 @@ Use a Mac with Swift 6.1+ and the macOS SDK. From the checkout run:
 ```sh
 ./scripts/quality.sh           # formatter, Swift/Python tests, release build, signature and panel checks
 ./scripts/install.sh           # build and install for the signed-in user
-./scripts/package-release.sh   # ZIP and SHA-256 in dist/
+./scripts/package-release.sh   # PKG, ZIP and SHA-256 files in dist/
 ```
 
 The UI check opens a temporary panel in the current graphical session. It uses
 an empty cache and isolated configuration. The build selects the active macOS
 SDK, with a compatibility fallback for Command Line Tools 27 when SDK 26.5 is
-available. CI also audits the locked Python dependencies.
+available. CI audits the locked Python dependencies and tests a fresh package
+install and upgrade. Pushing a version tag matching the app version (for example
+`v0.1.1`) publishes the tested PKG, ZIP and their checksums to Releases.
 
 ## Google OAuth setup
 
