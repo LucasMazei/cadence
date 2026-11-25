@@ -1,0 +1,4 @@
+# Official macOS wheels from PyPI (arm64 and x86_64).
+uv==0.12.23 \
+    --hash=sha256:99197c022afbd1edd0a295e9fdac5078c61eddf2e77657a77294cfe8ea0d94b9 \
+    --hash=sha256:4951286e68f116fa41897ecf8e248cc2836cb013be6d4f37afae4049f9ef4df7

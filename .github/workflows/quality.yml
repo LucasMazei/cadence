@@ -24,3 +24,53 @@ jobs:
         run: |
           uv export --project backend --locked --no-header --no-emit-project -o "$RUNNER_TEMP/requirements.txt" >/dev/null
           pip-audit --require-hashes --disable-pip -r "$RUNNER_TEMP/requirements.txt"
+      - name: Install and upgrade the release package on the runner
+        run: |
+          scripts/package-release.sh
+          version=$(plutil -extract CFBundleShortVersionString raw Resources/Info.plist)
+          pkg="dist/Cadence-$version-macOS-$(uname -m).pkg"
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            test "$GITHUB_REF_NAME" = "v$version"
+            test "$(uname -m)" = arm64
+          fi
+          (cd dist && shasum -a 256 -c ./*.sha256)
+          installer -pkg "$pkg" -target CurrentUserHomeDirectory
+          support="$HOME/.local/share/cadence"
+          "$support/bin/uv" --version
+          config="$HOME/.config/cadence/config.json"
+          printf '{"accounts":[]}\n' > "$config"
+          test "$(CADENCE_CONFIG_PATH="$config" "$support/bin/backend.sh" --tasks)" = '[]'
+          installer -pkg "$pkg" -target CurrentUserHomeDirectory
+          test "$(cat "$config")" = '{"accounts":[]}'
+          codesign --verify --strict "$HOME/Applications/Cadence.app"
+          launchctl print "gui/$(id -u)/com.lucasmazei.cadence" | grep -E '^[[:space:]]*state = running$'
+      - name: Save tested release downloads
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: macos-release
+          path: |
+            dist/*.pkg
+            dist/*.zip
+            dist/*.sha256
+          if-no-files-found: error
+          compression-level: 0
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: quality
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: macos-release
+      - name: Publish tested downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sha256sum --check ./*.sha256
+          gh release create "$GITHUB_REF_NAME" ./*.pkg ./*.zip ./*.sha256 \
+            --repo "$GITHUB_REPOSITORY" --verify-tag --title "Cadence ${GITHUB_REF_NAME#v} for macOS" \
+            --notes 'Download the .pkg for Apple Silicon and macOS 14 or later. Double-click it and follow the prompts. The package includes uv and downloads Python and dependencies on first sync. The installer is unsigned and has no Apple notarization. Gatekeeper or managed devices may block it.'

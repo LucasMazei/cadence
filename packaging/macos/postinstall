@@ -1,0 +1,9 @@
+#!/bin/bash
+set -euo pipefail
+# The per-user installer starts a LaunchAgent and manages files owned by that user.
+if [[ "$EUID" == 0 ]]; then
+    echo "Select Install for me only and run Installer as the signed-in user." >&2
+    exit 1
+fi
+cd "$(dirname "$0")/Cadence"
+exec ./scripts/install.sh --prebuilt

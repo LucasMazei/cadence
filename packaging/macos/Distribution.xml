@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <title>Cadence</title>
+    <domains enable_anywhere="false" enable_currentUserHome="true" enable_localSystem="false"/>
+    <options customize="never" hostArchitectures="@ARCH@"/>
+    <volume-check>
+        <allowed-os-versions><os-version min="14.0"/></allowed-os-versions>
+    </volume-check>
+    <choices-outline><line choice="cadence"/></choices-outline>
+    <choice id="cadence" visible="false">
+        <pkg-ref id="com.lucasmazei.cadence.installer"/>
+    </choice>
+    <pkg-ref id="com.lucasmazei.cadence.installer">Cadence-component.pkg</pkg-ref>
+</installer-gui-script>
