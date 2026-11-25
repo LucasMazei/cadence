@@ -6,13 +6,13 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "backend"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import fetch_calendar as backend
 
 
 class BackendTests(unittest.TestCase):
     def test_task_cache_matches_swift_fixture(self):
-        fixture = Path(__file__).resolve().parents[1] / "Swift/Fixtures/task.json"
+        fixture = Path(__file__).resolve().parents[2] / "Tests/CadenceTests/Fixtures/task.json"
         task = {"id": "t", "title": "Example", "due": "2026-01-01T00:00:00Z", "status": "needsAction"}
         self.assertEqual(backend.task_object({"id": "work"}, {"id": "inbox"}, task), json.loads(fixture.read_text()))
 
