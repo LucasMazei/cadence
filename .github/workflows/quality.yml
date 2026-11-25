@@ -1,0 +1,26 @@
+name: Quality
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  quality:
+    name: Quality
+    runs-on: macos-15
+    timeout-minutes: 20
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: Install backend tooling
+        run: |
+          python3 -m venv "$RUNNER_TEMP/tools"
+          "$RUNNER_TEMP/tools/bin/pip" install uv==0.12.23 pip-audit==2.10.1
+          echo "$RUNNER_TEMP/tools/bin" >> "$GITHUB_PATH"
+      - name: Build and test
+        run: scripts/quality.sh
+      - name: Audit locked Python dependencies
+        run: |
+          uv export --project backend --locked --no-header --no-emit-project -o "$RUNNER_TEMP/requirements.txt" >/dev/null
+          pip-audit --require-hashes --disable-pip -r "$RUNNER_TEMP/requirements.txt"

@@ -1,0 +1,24 @@
+{
+  "cacheDirectory": "~/.cache/cadence",
+  "syncScript": "~/.local/share/cadence/bin/sync.sh",
+  "backendCommand": "~/.local/share/cadence/bin/backend.sh",
+  "completedTaskDays": 1,
+  "accounts": [
+    {
+      "id": "personal",
+      "label": "Pessoal",
+      "credentialsPath": "~/.config/cadence/credentials.json",
+      "tokenPath": "~/.cache/cadence/personal-token.json",
+      "calendar": true,
+      "tasks": true
+    },
+    {
+      "id": "work",
+      "label": "Profissional",
+      "credentialsPath": "~/.config/cadence/credentials.json",
+      "tokenPath": "~/.cache/cadence/work-token.json",
+      "calendar": true,
+      "tasks": false
+    }
+  ]
+}

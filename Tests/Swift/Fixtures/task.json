@@ -1,0 +1,12 @@
+{
+  "id": "t",
+  "accountId": "work",
+  "listId": "inbox",
+  "list": "Tasks",
+  "title": "Example",
+  "notes": "",
+  "due": "2026-01-01T00:00:00Z",
+  "completed": null,
+  "status": "needsAction",
+  "link": ""
+}
