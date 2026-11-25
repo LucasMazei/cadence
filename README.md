@@ -78,6 +78,31 @@ account screen lets you select an OAuth credentials JSON, choose Calendar and
 Tasks independently, and starts OAuth only after clicking Connect. Removing an
 account removes its token from this Mac but retains shared OAuth credentials.
 
+## Contributing
+
+Every change to `main`, including documentation, goes through a pull request.
+If you have write access, work on a branch in this repository. Otherwise, fork
+the repository and clone your fork.
+
+1. Create a branch from the latest upstream `main`. From your clone, run:
+
+   ```sh
+   git fetch https://github.com/LucasMazei/cadence.git main
+   git switch -c my-change FETCH_HEAD
+   ```
+
+2. Make your change. For changes to the app or backend, run `./scripts/quality.sh`
+   from a graphical session on a Mac with Swift 6.1+, the macOS SDK, and `uv`.
+   Use synthetic data for tests and examples. Keep local OAuth credentials,
+   tokens, and calendar data out of commits and screenshots.
+
+3. Commit your changes and push the branch with `git push -u origin my-change`.
+   Open a pull request against `LucasMazei/cadence:main`. Describe what changed,
+   why, and how you verified it.
+
+4. Keep the branch up to date with `main`. Once the required `Quality` check
+   passes, a maintainer can merge the PR.
+
 ## Development and release
 
 Use a Mac with Swift 6.1+ and the macOS SDK. From the checkout run:
