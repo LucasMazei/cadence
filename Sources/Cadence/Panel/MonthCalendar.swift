@@ -6,6 +6,12 @@ struct MonthCalendar: View {
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 0), count: 7)
 
+    static func leadingSpacerIDs(for monthStart: Date, in calendar: Calendar) -> Range<Int> {
+        let count = (calendar.component(.weekday, from: monthStart) - calendar.firstWeekday + 7) % 7
+        // The grid also uses day numbers as IDs when switching months.
+        return (-count)..<0
+    }
+
     var body: some View {
         TimelineView(.everyMinute) { timeline in
             if let currentMonth = calendar.dateInterval(of: .month, for: timeline.date)?.start,
@@ -39,8 +45,7 @@ struct MonthCalendar: View {
                                 .foregroundStyle(.secondary)
                                 .accessibilityLabel(calendar.standaloneWeekdaySymbols[weekday])
                         }
-                        let leadingDays = (calendar.component(.weekday, from: month) - calendar.firstWeekday + 7) % 7
-                        ForEach(0..<leadingDays, id: \.self) { _ in
+                        ForEach(Self.leadingSpacerIDs(for: month, in: calendar), id: \.self) { _ in
                             Color.clear.frame(height: 32).accessibilityHidden(true)
                         }
                         ForEach(days, id: \.self) { day in
