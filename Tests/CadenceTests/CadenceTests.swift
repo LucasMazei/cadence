@@ -5,6 +5,18 @@ import Testing
 
 @testable import Cadence
 
+@MainActor @Test func calendarSpacersKeepDistinctIDsFromDays() throws {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.firstWeekday = 1
+    for (year, month, expectedSpacers) in [(2026, 11, 0), (2026, 12, 2), (2027, 1, 5)] {
+        let start = try #require(calendar.date(from: DateComponents(year: year, month: month, day: 1)))
+        let days = try #require(calendar.range(of: .day, in: .month, for: start))
+        let spacers = MonthCalendar.leadingSpacerIDs(for: start, in: calendar)
+        #expect(spacers.count == expectedSpacers)
+        #expect(Set(spacers).isDisjoint(with: days))
+    }
+}
+
 @Test func backendCacheContract() throws {
     let fixture = try #require(Bundle.module.url(forResource: "task", withExtension: "json", subdirectory: "Fixtures"))
     let task = try JSONDecoder().decode(CadenceTask.self, from: Data(contentsOf: fixture))
